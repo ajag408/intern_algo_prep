@@ -126,35 +126,151 @@
 
 //zigzag
 
+// class Solution {
+//     public String convert(String s, int numRows) {
+//         ArrayList<ArrayList<Character>> zig = new ArrayList<ArrayList<Character>>();
+//         String output = "";
+//         for(int i = 0; i<numRows; i++){
+//             ArrayList<Character> zag = new ArrayList<Character>(Collections.nCopies(s.length(), ' '));
+//             zig.add(zag);
+//         }
+//         int count = 0;
+//         int column = 0;
+//         while(count<s.length()){
+//             for(int i = 0; i<numRows; i++){
+//                 zig.get(i).add(column, s.charAt(count));
+//                 count++;
+//                 if(count >= s.length()){
+//                      break;
+//                 }
+//             }
+//             if(count >= s.length()){
+//                 break;
+//             }
+//             column++;
+//             for(int j = numRows-2; j>0; j--){
+//                 zig.get(j).add(column,s.charAt(count));
+//                 column++;
+//                 count++;
+//                 if(count >= s.length()){
+//                  break;
+//                  }
+//             }
+//         }
+//         for(int x = 0; x<zig.size(); x++){
+//                            // System.out.println(zig.get(x));
+//             for(int y = 0; y<s.length(); y++){
+//
+//                 if(zig.get(x).get(y) != ' '){
+//
+//
+//                     output += zig.get(x).get(y);
+//                 }
+//             }
+//         }
+//         return output;
+//     }
+// }
+
+//Reverse Integer
+
+// class Solution {
+//     public int reverse(int x) {
+//         String input = String.valueOf(x);
+//         boolean atBack = true;
+//         String output = "";
+//         if(input.charAt(0) == '-'){
+//             output += '-';
+//             input = input.substring(1, input.length());
+//         }
+//         for(int a = input.length()-1; a>=0; a--){
+//             if(input.charAt(a) == 0 && atBack){
+//                 continue;
+//             } else {
+//                 atBack = false;
+//             }
+//             output += input.charAt(a);
+//         }
+//         // System.out.println(output);
+//         try {
+//            Integer result = Integer.valueOf(output);
+//             return result;
+//         } catch(Exception e) {
+//             return 0;
+//         }
+//
+//     }
+// }
+
+//combo sum 2
+
 class Solution {
-    public String convert(String s, int numRows) {
-        ArrayList<ArrayList<Character>> zig = new ArrayList<ArrayList<Character>>();
-        String output = "";
-        for(int i = 0; i<numRows; i++){
-            zig.add(new ArrayList<Character>());
-        }
-        int count = 0;
-        int column = 0;
-        while(count<s.length()){
-            for(int i = 0; i<numRows; i++){
-                zig.get(i).add(column, s.charAt(count));
-                count++;
-            }
-            column++;
-            for(int j = numRows-1; j>0; j--){
-                zig.get(j).add(column,s.charAt(count));
-                column++;
-                count++;
-            }
-        }
-        for(int x = 0; x<zig.size(); x++){
-            for(int y = 0; y<zig.get(x).size(); y++){
-                if(zig.get(x).get(y) != ' '){
-                    System.out.println(zig.get(x));
-                    // output.add(zig.get(x).get(y));
-                }
-            }
-        }
-        return output;
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> combos = new ArrayList<List<Integer>>();
+        List<Integer> store = new ArrayList<Integer>();
+        int runningSum = 0;
+
+        recAdd(combos, store, 0, candidates.length, 0, candidates.length, runningSum, target, candidates);
+        System.out.println(combos);
+        return combos;
     }
+
+    public void recAdd(List<List<Integer>> combos, List<Integer> store, int start, int end, int idx, int r, int sum, int target, int[] candidates){
+        if(idx == r){
+            return;
+        }
+
+        if(sum==target){
+            bubbleSort(store);
+            if(!inCombos(combos, store)){
+                combos.add(store);
+                System.out.println("in");
+                System.out.println(combos);
+            }
+            return;
+         }
+
+//          if(idx+1<candidates.length){
+//             idx = idx+1;
+//             store.add(candidates[idx]);
+//             sum = sum + candidates(idx);
+
+//          }
+
+        for(int i = start; i < end && end-i+1 >= r-idx; i++){
+            store.add(idx, candidates[i]);
+            sum += candidates[i];
+            System.out.println(store);
+            System.out.println(sum);
+            recAdd(combos, store, i+1, end, idx+1, r, sum, target, candidates);
+            // store.clear();
+            // sum = 0;
+        }
+    }
+
+
+      public void bubbleSort(List<Integer> combo){
+          int min =0;
+          for(int i = 0; i<combo.size(); i++){
+              min = i;
+              for(int j = i+1; j<combo.size(); j++){
+                  if(combo.get(i)>combo.get(j)){
+                    min = j;
+                  }
+                  int temp = combo.get(min);
+                  combo.set(min, combo.get(i));
+                  combo.set(i, temp);
+              }
+          }
+      }
+
+      public boolean inCombos(List<List<Integer>> combos, List<Integer> store){
+          boolean in = false;
+          for(List<Integer> combo : combos){
+              if(combo.equals(store)){
+                  in = true;
+              }
+          }
+          return in;
+      }
 }
