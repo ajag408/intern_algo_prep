@@ -208,69 +208,42 @@ class Solution {
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> combos = new ArrayList<List<Integer>>();
         List<Integer> store = new ArrayList<Integer>();
-        int runningSum = 0;
-
-        recAdd(combos, store, 0, candidates.length, 0, candidates.length, runningSum, target, candidates);
-        System.out.println(combos);
+        Arrays.sort(candidates);
+        for(int x = 1; x<=candidates.length; x++){
+            recAdd(combos, store, 0, candidates.length, 0, x, target, candidates);
+            store.clear();
+        }
+        combos = combos.stream().distinct().collect(Collectors.toList());
         return combos;
     }
 
-    public void recAdd(List<List<Integer>> combos, List<Integer> store, int start, int end, int idx, int r, int sum, int target, int[] candidates){
-        if(idx == r){
+    public void recAdd(List<List<Integer>> combos, List<Integer> store, int start, int end, int idx, int r, int target, int[] candidates){
+
+       if (idx == r)
+        {
+            int sum = 0;
+            List<Integer> answer = new ArrayList<Integer>();
+            for (int j=0; j<r; j++) {
+               sum += store.get(j);
+               if(sum == target){
+                   for(int y = j; y>=0; y--){
+                        answer.add(store.get(y));
+                   }
+                   Collections.sort(answer);
+                   combos.add(answer);
+               }
+            }
             return;
         }
 
-        if(sum==target){
-            bubbleSort(store);
-            if(!inCombos(combos, store)){
-                combos.add(store);
-                System.out.println("in");
-                System.out.println(combos);
-            }
-            return;
-         }
-
-//          if(idx+1<candidates.length){
-//             idx = idx+1;
-//             store.add(candidates[idx]);
-//             sum = sum + candidates(idx);
-
-//          }
-
         for(int i = start; i < end && end-i+1 >= r-idx; i++){
-            store.add(idx, candidates[i]);
-            sum += candidates[i];
-            System.out.println(store);
-            System.out.println(sum);
-            recAdd(combos, store, i+1, end, idx+1, r, sum, target, candidates);
-            // store.clear();
-            // sum = 0;
+            if(candidates[i]>target){
+                continue;
+            } else {
+                store.add(idx, candidates[i]);
+                recAdd(combos, store, i+1, end, idx+1, r, target, candidates);
+            }
         }
     }
 
-
-      public void bubbleSort(List<Integer> combo){
-          int min =0;
-          for(int i = 0; i<combo.size(); i++){
-              min = i;
-              for(int j = i+1; j<combo.size(); j++){
-                  if(combo.get(i)>combo.get(j)){
-                    min = j;
-                  }
-                  int temp = combo.get(min);
-                  combo.set(min, combo.get(i));
-                  combo.set(i, temp);
-              }
-          }
-      }
-
-      public boolean inCombos(List<List<Integer>> combos, List<Integer> store){
-          boolean in = false;
-          for(List<Integer> combo : combos){
-              if(combo.equals(store)){
-                  in = true;
-              }
-          }
-          return in;
-      }
 }
